@@ -1,0 +1,392 @@
+
+==============================================================================
+1. PROPERTY TYPES FOUND (raw monthly files, before filtering)
+==============================================================================
+                     Listing    Sold  Sold_%  Listing_%
+PropertyType                                           
+Residential           557051  414054   67.25      63.82
+ResidentialLease      182490  140960   22.89      20.91
+Land                   54904   20038    3.25       6.29
+ManufacturedInPark     24940   16706    2.71       2.86
+ResidentialIncome      31754   16476    2.68       3.64
+CommercialSale         11418    3843    0.62       1.31
+CommercialLease         7614    3216    0.52       0.87
+BusinessOpportunity     2614     414    0.07       0.30
+
+Filtering logic applied (week1_combine.py):
+    sold     = sold[sold['PropertyType'] == 'Residential']
+    listings = listings[listings['PropertyType'] == 'Residential']
+Only 'Residential' (single-family / condo / townhome for sale) is kept.
+Excluded: ResidentialLease (rentals), ResidentialIncome (multi-unit investment),
+Land, ManufacturedInPark, Commercial*, BusinessOpportunity – these price on
+different fundamentals and would distort for-sale home price analysis.
+Only exact matches of 'Residential' are kept, so any malformed value
+(e.g. from a truncated download) is excluded automatically.
+
+==============================================================================
+2. DATASET STRUCTURE
+==============================================================================
+SOLD: 414,054 rows x 85 columns
+  PropertyType values after filter: ['Residential']
+LISTINGS: 557,051 rows x 74 columns
+  PropertyType values after filter: ['Residential']
+
+Sold column data types:
+object     53
+float64    29
+int64       3
+
+Flooring                         object
+ViewYN                           object
+WaterfrontYN                     object
+BasementYN                       object
+PoolPrivateYN                    object
+OriginalListPrice               float64
+ListingKey                        int64
+ListAgentEmail                   object
+CloseDate                        object
+ClosePrice                      float64
+ListAgentFirstName               object
+ListAgentLastName                object
+Latitude                        float64
+Longitude                       float64
+UnparsedAddress                  object
+PropertyType                     object
+LivingArea                      float64
+ListPrice                       float64
+DaysOnMarket                      int64
+ListOfficeName                   object
+BuyerOfficeName                  object
+CoListOfficeName                 object
+ListAgentFullName                object
+CoListAgentFirstName             object
+CoListAgentLastName              object
+BuyerAgentMlsId                  object
+BuyerAgentFirstName              object
+BuyerAgentLastName               object
+FireplacesTotal                 float64
+AssociationFeeFrequency          object
+AboveGradeFinishedArea          float64
+ListingKeyNumeric                 int64
+MLSAreaMajor                     object
+TaxAnnualAmount                 float64
+CountyOrParish                   object
+MlsStatus                        object
+ElementarySchool                 object
+AttachedGarageYN                 object
+ParkingTotal                    float64
+BuilderName                      object
+PropertySubType                  object
+LotSizeAcres                    float64
+SubdivisionName                  object
+BuyerOfficeAOR                   object
+YearBuilt                       float64
+BuyerAgencyCompensationType      object
+StreetNumberNumeric             float64
+ListingId                        object
+BathroomsTotalInteger           float64
+City                             object
+BuyerAgencyCompensation         float64
+TaxYear                         float64
+BuildingAreaTotal               float64
+BedroomsTotal                   float64
+ContractStatusChangeDate         object
+ElementarySchoolDistrict        float64
+CoBuyerAgentFirstName            object
+PurchaseContractDate             object
+ListingContractDate              object
+BelowGradeFinishedArea          float64
+BusinessType                    float64
+StateOrProvince                  object
+CoveredSpaces                   float64
+MiddleOrJuniorSchool             object
+FireplaceYN                      object
+Stories                         float64
+HighSchool                       object
+Levels                           object
+LotSizeDimensions                object
+LotSizeArea                     float64
+MainLevelBedrooms               float64
+NewConstructionYN                object
+GarageSpaces                    float64
+HighSchoolDistrict               object
+PostalCode                       object
+AssociationFee                  float64
+LotSizeSquareFeet               float64
+MiddleOrJuniorSchoolDistrict    float64
+latfilled                        object
+lonfilled                        object
+source_file                      object
+BuyerAgentAOR                    object
+ListAgentAOR                     object
+OriginatingSystemName            object
+OriginatingSystemSubName         object
+
+Market-analysis fields (58): ['Flooring', 'ViewYN', 'WaterfrontYN', 'BasementYN', 'PoolPrivateYN', 'OriginalListPrice', 'CloseDate', 'ClosePrice', 'Latitude', 'Longitude', 'UnparsedAddress', 'PropertyType', 'LivingArea', 'ListPrice', 'DaysOnMarket', 'FireplacesTotal', 'AssociationFeeFrequency', 'AboveGradeFinishedArea', 'MLSAreaMajor', 'TaxAnnualAmount', 'CountyOrParish', 'ElementarySchool', 'AttachedGarageYN', 'ParkingTotal', 'PropertySubType', 'LotSizeAcres', 'SubdivisionName', 'YearBuilt', 'BuyerAgencyCompensationType', 'StreetNumberNumeric', 'BathroomsTotalInteger', 'City', 'BuyerAgencyCompensation', 'TaxYear', 'BuildingAreaTotal', 'BedroomsTotal', 'ContractStatusChangeDate', 'ElementarySchoolDistrict', 'PurchaseContractDate', 'ListingContractDate', 'BelowGradeFinishedArea', 'StateOrProvince', 'CoveredSpaces', 'MiddleOrJuniorSchool', 'FireplaceYN', 'Stories', 'HighSchool', 'Levels', 'LotSizeDimensions', 'LotSizeArea', 'MainLevelBedrooms', 'NewConstructionYN', 'GarageSpaces', 'HighSchoolDistrict', 'PostalCode', 'AssociationFee', 'LotSizeSquareFeet', 'MiddleOrJuniorSchoolDistrict']
+
+Metadata fields (27): ['ListingKey', 'ListAgentEmail', 'ListAgentFirstName', 'ListAgentLastName', 'ListOfficeName', 'BuyerOfficeName', 'CoListOfficeName', 'ListAgentFullName', 'CoListAgentFirstName', 'CoListAgentLastName', 'BuyerAgentMlsId', 'BuyerAgentFirstName', 'BuyerAgentLastName', 'ListingKeyNumeric', 'MlsStatus', 'BuilderName', 'BuyerOfficeAOR', 'ListingId', 'CoBuyerAgentFirstName', 'BusinessType', 'latfilled', 'lonfilled', 'source_file', 'BuyerAgentAOR', 'ListAgentAOR', 'OriginatingSystemName', 'OriginatingSystemSubName']
+
+==============================================================================
+3. MISSING VALUE REPORT – SOLD
+==============================================================================
+                              null_count  null_pct    dtype  over_90pct  core_field decision
+AboveGradeFinishedArea            414054    100.00  float64        True       False     DROP
+CoveredSpaces                     414054    100.00  float64        True       False     DROP
+TaxAnnualAmount                   414054    100.00  float64        True       False     DROP
+TaxYear                           414054    100.00  float64        True       False     DROP
+ElementarySchoolDistrict          414054    100.00  float64        True       False     DROP
+FireplacesTotal                   414054    100.00  float64        True       False     DROP
+MiddleOrJuniorSchoolDistrict      414054    100.00  float64        True       False     DROP
+BusinessType                      414054    100.00  float64        True       False     DROP
+WaterfrontYN                      413795     99.94   object        True       False     DROP
+BelowGradeFinishedArea            411652     99.42  float64        True       False     DROP
+BasementYN                        405952     98.04   object        True       False     DROP
+LotSizeDimensions                 393945     95.14   object        True       False     DROP
+BuilderName                       393790     95.11   object        True       False     DROP
+BuildingAreaTotal                 385055     93.00  float64        True       False     DROP
+CoBuyerAgentFirstName             376429     90.91   object        True       False     DROP
+OriginatingSystemSubName          369545     89.25   object       False       False     KEEP
+OriginatingSystemName             369545     89.25   object       False       False     KEEP
+ElementarySchool                  358943     86.69   object       False       False     KEEP
+MiddleOrJuniorSchool              358554     86.60   object       False       False     KEEP
+BuyerAgencyCompensation           356739     86.16  float64       False       False     KEEP
+BuyerAgencyCompensationType       356726     86.15   object       False       False     KEEP
+HighSchool                        341992     82.60   object       False       False     KEEP
+CoListAgentFirstName              319162     77.08   object       False       False     KEEP
+CoListAgentLastName               318916     77.02   object       False       False     KEEP
+CoListOfficeName                  316062     76.33   object       False       False     KEEP
+lonfilled                         305897     73.88   object       False       False     KEEP
+latfilled                         305897     73.88   object       False       False     KEEP
+SubdivisionName                   260062     62.81   object       False       False     KEEP
+AssociationFeeFrequency           241538     58.33   object       False       False     KEEP
+MainLevelBedrooms                 173796     41.97  float64       False       False     KEEP
+Flooring                          148589     35.89   object       False       False     KEEP
+HighSchoolDistrict                113643     27.45   object       False       False     KEEP
+AssociationFee                     94697     22.87  float64       False       False     KEEP
+Stories                            63795     15.41  float64       False       False     KEEP
+AttachedGarageYN                   63266     15.28   object       False       False     KEEP
+BuyerAgentAOR                      62072     14.99   object       False       False     KEEP
+ListAgentAOR                       57379     13.86   object       False       False     KEEP
+MLSAreaMajor                       55359     13.37   object       False       False     KEEP
+Levels                             39919      9.64   object       False       False     KEEP
+PoolPrivateYN                      35666      8.61   object       False       False     KEEP
+ViewYN                             35264      8.52   object       False       False     KEEP
+LotSizeAcres                       32535      7.86  float64       False        True     KEEP
+LotSizeSquareFeet                  32135      7.76  float64       False       False     KEEP
+LotSizeArea                        32006      7.73  float64       False       False     KEEP
+NewConstructionYN                  30730      7.42   object       False       False     KEEP
+BuyerOfficeAOR                     23396      5.65   object       False       False     KEEP
+GarageSpaces                       17760      4.29  float64       False       False     KEEP
+BuyerOfficeName                     6742      1.63   object       False       False     KEEP
+Longitude                           4104      0.99  float64       False        True     KEEP
+Latitude                            4104      0.99  float64       False        True     KEEP
+ListAgentFirstName                  3109      0.75   object       False       False     KEEP
+BuyerAgentFirstName                 2010      0.49   object       False       False     KEEP
+ListAgentEmail                      1065      0.26   object       False       False     KEEP
+PropertySubType                      804      0.19   object       False        True     KEEP
+OriginalListPrice                    756      0.18  float64       False        True     KEEP
+ContractStatusChangeDate             594      0.14   object       False       False     KEEP
+BuyerAgentMlsId                      534      0.13   object       False       False     KEEP
+StreetNumberNumeric                  478      0.12  float64       False       False     KEEP
+ParkingTotal                         430      0.10  float64       False       False     KEEP
+UnparsedAddress                      390      0.09   object       False        True     KEEP
+YearBuilt                            372      0.09  float64       False        True     KEEP
+City                                 311      0.08   object       False        True     KEEP
+FireplaceYN                          331      0.08   object       False       False     KEEP
+LivingArea                           234      0.06  float64       False        True     KEEP
+PurchaseContractDate                 194      0.05   object       False        True     KEEP
+BuyerAgentLastName                   175      0.04   object       False       False     KEEP
+ListAgentFullName                     92      0.02   object       False       False     KEEP
+BathroomsTotalInteger                 69      0.02  float64       False        True     KEEP
+ListAgentLastName                     42      0.01   object       False       False     KEEP
+ClosePrice                             2      0.00  float64       False        True     KEEP
+ListOfficeName                         0      0.00   object       False       False     KEEP
+ListingKeyNumeric                      0      0.00    int64       False       False     KEEP
+CountyOrParish                         0      0.00   object       False        True     KEEP
+MlsStatus                              0      0.00   object       False       False     KEEP
+source_file                            0      0.00   object       False       False     KEEP
+ListingKey                             0      0.00    int64       False        True     KEEP
+ListingId                              0      0.00   object       False       False     KEEP
+BedroomsTotal                         11      0.00  float64       False        True     KEEP
+PostalCode                             2      0.00   object       False        True     KEEP
+StateOrProvince                        0      0.00   object       False       False     KEEP
+DaysOnMarket                           0      0.00    int64       False        True     KEEP
+ListPrice                              0      0.00  float64       False        True     KEEP
+PropertyType                           0      0.00   object       False        True     KEEP
+CloseDate                              0      0.00   object       False        True     KEEP
+ListingContractDate                    1      0.00   object       False        True     KEEP
+
+Columns >90% null (15): ['AboveGradeFinishedArea', 'CoveredSpaces', 'TaxAnnualAmount', 'TaxYear', 'ElementarySchoolDistrict', 'FireplacesTotal', 'MiddleOrJuniorSchoolDistrict', 'BusinessType', 'WaterfrontYN', 'BelowGradeFinishedArea', 'BasementYN', 'LotSizeDimensions', 'BuilderName', 'BuildingAreaTotal', 'CoBuyerAgentFirstName']
+
+==============================================================================
+3b. MISSING VALUE REPORT – LISTINGS
+==============================================================================
+                              null_count  null_pct    dtype  over_90pct  core_field decision
+TaxAnnualAmount                   557051    100.00  float64        True       False     DROP
+AboveGradeFinishedArea            557051    100.00  float64        True       False     DROP
+MiddleOrJuniorSchoolDistrict      557051    100.00  float64        True       False     DROP
+FireplacesTotal                   557051    100.00  float64        True       False     DROP
+TaxYear                           557051    100.00  float64        True       False     DROP
+CoveredSpaces                     557051    100.00  float64        True       False     DROP
+BusinessType                      557051    100.00  float64        True       False     DROP
+ElementarySchoolDistrict          557051    100.00  float64        True       False     DROP
+BelowGradeFinishedArea            553885     99.43  float64        True       False     DROP
+CoBuyerAgentFirstName             540966     97.11   object        True       False     DROP
+BuilderName                       531093     95.34   object        True       False     DROP
+LotSizeDimensions                 528036     94.79   object        True       False     DROP
+BuyerAgencyCompensation           515554     92.55  float64        True       False     DROP
+BuyerAgencyCompensationType       515543     92.55   object        True       False     DROP
+BuildingAreaTotal                 508143     91.22  float64        True       False     DROP
+ElementarySchool                  490361     88.03   object       False       False     KEEP
+MiddleOrJuniorSchool              490313     88.02   object       False       False     KEEP
+HighSchool                        469530     84.29   object       False       False     KEEP
+CoListAgentFirstName              432739     77.68   object       False       False     KEEP
+CoListAgentLastName               432326     77.61   object       False       False     KEEP
+CoListOfficeName                  432247     77.60   object       False       False     KEEP
+ClosePrice                        394126     70.75  float64       False        True     KEEP
+BuyerOfficeAOR                    393411     70.62   object       False       False     KEEP
+BuyerOfficeName                   382530     68.67   object       False       False     KEEP
+BuyerAgentFirstName               380958     68.39   object       False       False     KEEP
+BuyerAgentMlsId                   380481     68.30   object       False       False     KEEP
+BuyerAgentLastName                380185     68.25   object       False       False     KEEP
+CloseDate                         373329     67.02   object       False        True     KEEP
+SubdivisionName                   351641     63.13   object       False       False     KEEP
+AssociationFeeFrequency           318919     57.25   object       False       False     KEEP
+PurchaseContractDate              276654     49.66   object       False        True     KEEP
+MainLevelBedrooms                 254137     45.62  float64       False       False     KEEP
+HighSchoolDistrict                167303     30.03   object       False       False     KEEP
+AssociationFee                    134064     24.07  float64       False       False     KEEP
+Stories                            97071     17.43  float64       False       False     KEEP
+AttachedGarageYN                   96588     17.34   object       False       False     KEEP
+Latitude                           80669     14.48  float64       False        True     KEEP
+Longitude                          80669     14.48  float64       False        True     KEEP
+MLSAreaMajor                       75902     13.63   object       False       False     KEEP
+Levels                             60223     10.81   object       False       False     KEEP
+LotSizeAcres                       45814      8.22  float64       False        True     KEEP
+LotSizeSquareFeet                  45108      8.10  float64       False       False     KEEP
+LotSizeArea                        44935      8.07  float64       False       False     KEEP
+NewConstructionYN                  38505      6.91   object       False       False     KEEP
+GarageSpaces                       30536      5.48  float64       False       False     KEEP
+ContractStatusChangeDate            5978      1.07   object       False       False     KEEP
+ListAgentFirstName                  4346      0.78   object       False       False     KEEP
+ListAgentEmail                      1511      0.27   object       False       False     KEEP
+PropertySubType                     1279      0.23   object       False        True     KEEP
+StreetNumberNumeric                  971      0.17  float64       False       False     KEEP
+YearBuilt                            906      0.16  float64       False        True     KEEP
+OriginalListPrice                    811      0.15  float64       False        True     KEEP
+UnparsedAddress                      784      0.14   object       False        True     KEEP
+LivingArea                           542      0.10  float64       False        True     KEEP
+FireplaceYN                          581      0.10   object       False       False     KEEP
+City                                 562      0.10   object       False        True     KEEP
+BedroomsTotal                        147      0.03  float64       False        True     KEEP
+ListAgentFullName                     97      0.02   object       False       False     KEEP
+StateOrProvince                       52      0.01   object       False       False     KEEP
+BathroomsTotalInteger                 54      0.01  float64       False        True     KEEP
+ListAgentLastName                     41      0.01   object       False       False     KEEP
+PostalCode                            13      0.00   object       False        True     KEEP
+source_file                            0      0.00   object       False       False     KEEP
+CountyOrParish                         0      0.00   object       False        True     KEEP
+PropertyType                           0      0.00   object       False        True     KEEP
+MlsStatus                              0      0.00   object       False       False     KEEP
+ListPrice                              0      0.00  float64       False        True     KEEP
+DaysOnMarket                           0      0.00    int64       False        True     KEEP
+ListOfficeName                         0      0.00   object       False       False     KEEP
+ListingId                              0      0.00   object       False       False     KEEP
+ListingKey                             0      0.00    int64       False        True     KEEP
+ListingKeyNumeric                      0      0.00    int64       False       False     KEEP
+ParkingTotal                          16      0.00  float64       False       False     KEEP
+ListingContractDate                    0      0.00   object       False        True     KEEP
+
+Columns >90% null (15): ['TaxAnnualAmount', 'AboveGradeFinishedArea', 'MiddleOrJuniorSchoolDistrict', 'FireplacesTotal', 'TaxYear', 'CoveredSpaces', 'BusinessType', 'ElementarySchoolDistrict', 'BelowGradeFinishedArea', 'CoBuyerAgentFirstName', 'BuilderName', 'LotSizeDimensions', 'BuyerAgencyCompensation', 'BuyerAgencyCompensationType', 'BuildingAreaTotal']
+
+Decision rule: drop columns >90% null UNLESS they are core market fields;
+core fields are kept even if partially missing.
+
+==============================================================================
+4. NUMERIC DISTRIBUTION SUMMARY – SOLD (Residential)
+==============================================================================
+                          count        mean         std     min        1%         5%        25%     median         75%         95%         99%           max  extreme_low_n  extreme_high_n  extreme_low_cut  extreme_high_cut
+ClosePrice             414052.0  1193864.08  6290122.12     0.0  202302.0  340000.00  575000.00  823000.00  1300000.00  2850000.00  5575000.00  9.895000e+08              0           13251      -1600000.00        3475000.00
+ListPrice              414054.0  1140462.08  1359496.95   525.0  214900.0  347000.00  576167.00  815000.00  1295000.00  2850000.00  5700000.00  1.375000e+08              0           13653      -1580332.00        3451499.00
+OriginalListPrice      413298.0  1225400.98  6709937.92     0.0  210000.0  349900.00  585000.00  825000.00  1299000.00  2899999.00  5995000.00  1.390000e+09              0           14547      -1557000.00        3441000.00
+LivingArea             413820.0     1903.79    26476.20     0.0     604.0     840.00    1248.00    1642.00     2219.00     3559.05     5282.00  1.702132e+07              0            4606         -1665.00           5132.00
+LotSizeAcres           381519.0       66.30    15998.18     0.0       0.0       0.03       0.12       0.17        0.27        2.82       10.83  7.810698e+06              0           47776            -0.34              0.73
+BedroomsTotal          414043.0        3.20        1.07     0.0       1.0       2.00       3.00       3.00        4.00        5.00        6.00  4.500000e+01              0             651             0.00              7.00
+BathroomsTotalInteger  413985.0        2.53        1.13     0.0       1.0       1.00       2.00       2.00        3.00        4.00        6.00  1.750000e+02              0            2854            -1.00              6.00
+DaysOnMarket           414054.0       37.36       53.59  -288.0       0.0       1.00       8.00      18.00       48.00      132.00      231.00  1.243000e+04              2           10851          -112.00            168.00
+YearBuilt              413682.0     1978.58       26.28  1776.0    1912.0    1930.00    1960.00    1979.00     1999.00     2022.00     2025.00  2.026000e+03              9               0          1843.00           2116.00
+
+Key fields (deliverable): ClosePrice, LivingArea, DaysOnMarket
+                min        1%        5%       25%    median       mean        75%        95%        99%          max
+ClosePrice      0.0  202302.0  340000.0  575000.0  823000.0  1193864.1  1300000.0  2850000.0  5575000.0  989500000.0
+LivingArea      0.0     604.0     840.0    1248.0    1642.0     1903.8     2219.0     3559.0     5282.0   17021321.0
+DaysOnMarket -288.0       0.0       1.0       8.0      18.0       37.4       48.0      132.0      231.0      12430.0
+
+Suspicious values to handle in cleaning:
+  ClosePrice <= $1,000:         9
+  ClosePrice >= $100M:          40  (likely data-entry errors)
+  LivingArea <= 100 sqft:       207
+  DaysOnMarket < 0:             48
+  YearBuilt < 1850 or > 2027:   9
+  BedroomsTotal > 15:           15
+
+Plots saved to output/eda/plots
+
+==============================================================================
+5. EDA QUESTIONS
+==============================================================================
+Q1. Residential vs. other property type share (raw sold files):
+    Residential = 67.2% of sold records, 63.8% of listing records
+
+Q2. Close price:  median $823,000   mean $1,193,864
+    (mean > median → right-skewed by luxury sales)
+
+Q3. Days on Market: median 18, mean 37.4, 75th pct 48, 95th pct 132
+DaysOnMarket
+<0 (error)     0.0
+0-7           24.4
+8-14          19.6
+15-30         18.9
+31-60         17.6
+61-90          8.7
+91-180         8.6
+180+           2.1
+
+Q4. Sale price vs. list price (n=414,051):
+    Above list: 40.1%   At list: 17.4%   Below list: 42.5%
+    Median close-to-list ratio: 1.000
+
+Q5. Date consistency checks:
+    CloseDate before ListingContractDate                    61 (0.01%)
+    CloseDate before PurchaseContractDate                  239 (0.06%)
+    PurchaseContractDate before ListingContractDate        268 (0.06%)
+    CloseDate missing / unparseable                          0 (0.00%)
+    CloseDate in the future                                  0 (0.00%)
+    CloseDate outside its monthly file                       0 (0.00%)
+
+Q6. Counties with highest median close price (counties with ≥100 sales):
+                  sales  median_price  mean_price
+CountyOrParish                                   
+San Mateo          7279     1700000.0   2198983.0
+Santa Clara       18453     1600000.0   1922688.0
+Santa Cruz         2999     1200000.0   1349743.0
+San Francisco       956     1198950.0   1320384.0
+Orange            46604     1175000.0   1535091.0
+Marin               146     1165000.0   1354327.0
+Alameda           19532     1134000.0   1308662.0
+Monterey           3987      910000.0   1402395.0
+Los Angeles      102904      900000.0   1323955.0
+San Diego         51155      899000.0   1495038.0
+Ventura           12881      869000.0   1075967.0
+San Luis Obispo    5993      865000.0   1026752.0
+Napa                116      830000.0   1065604.0
+Contra Costa      18816      820000.0   1128613.0
+San Benito          830      779000.0    838663.0
+
+==============================================================================
+6. SAVE FILTERED DATASETS
+==============================================================================
+Sold:     dropped ['AboveGradeFinishedArea', 'CoveredSpaces', 'TaxAnnualAmount', 'TaxYear', 'ElementarySchoolDistrict', 'FireplacesTotal', 'MiddleOrJuniorSchoolDistrict', 'BusinessType', 'WaterfrontYN', 'BelowGradeFinishedArea', 'BasementYN', 'LotSizeDimensions', 'BuilderName', 'BuildingAreaTotal', 'CoBuyerAgentFirstName'] -> 70 cols, 414,054 rows
+Listings: dropped ['TaxAnnualAmount', 'AboveGradeFinishedArea', 'MiddleOrJuniorSchoolDistrict', 'FireplacesTotal', 'TaxYear', 'CoveredSpaces', 'BusinessType', 'ElementarySchoolDistrict', 'BelowGradeFinishedArea', 'CoBuyerAgentFirstName', 'BuilderName', 'LotSizeDimensions', 'BuyerAgencyCompensation', 'BuyerAgencyCompensationType', 'BuildingAreaTotal'] -> 59 cols, 557,051 rows
+Saved: output/sold_residential_filtered.csv
+Saved: output/listings_residential_filtered.csv
