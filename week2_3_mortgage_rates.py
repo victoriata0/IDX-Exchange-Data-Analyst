@@ -13,10 +13,6 @@ Inputs:  output/sold_residential_filtered.csv      (from week2_3_eda.py)
 Outputs: output/sold_with_rates.csv
          output/listings_with_rates.csv
          output/mortgage30us_monthly.csv
-
-If the FRED download is blocked on your network, download the CSV manually
-from https://fred.stlouisfed.org/series/MORTGAGE30US (Download -> CSV), save it
-as MORTGAGE30US.csv in the Internship folder, and re-run.
 """
 import io
 from pathlib import Path
