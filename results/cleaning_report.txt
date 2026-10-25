@@ -1,0 +1,149 @@
+
+SOLD
+1. CloseDate                  -> datetime  (unparseable values set to NaT: 0)
+1. PurchaseContractDate       -> datetime  (unparseable values set to NaT: 0)
+1. ListingContractDate        -> datetime  (unparseable values set to NaT: 0)
+1. ContractStatusChangeDate   -> datetime  (unparseable values set to NaT: 0)
+
+2. Dropped 9 redundant columns: ['MlsStatus', 'OriginatingSystemName', 'ListAgentFirstName', 'ListAgentLastName', 'ListingKeyNumeric', 'LotSizeArea', 'ListAgentEmail', 'latfilled', 'lonfilled']
+
+3. Stripped whitespace in 38 text columns; 0 empty strings -> NaN
+   Converted Y/N fields to boolean: ['ViewYN', 'PoolPrivateYN', 'AttachedGarageYN', 'FireplaceYN', 'NewConstructionYN']
+
+5. Invalid numeric values (removed):
+   ClosePrice <= 0                    1
+   ListPrice <= 0                     0
+   LivingArea <= 0                  150
+   DaysOnMarket < 0                  48
+   BedroomsTotal < 0                  0
+   BathroomsTotalInteger < 0          0
+
+6. Date consistency flags (rows kept):
+   listing_after_close_flag          61  (0.01%)
+   purchase_after_close_flag        239  (0.06%)
+   negative_timeline_flag           267  (0.06%)
+
+7. Geographic data quality (rows kept, flagged):
+   missing_coords_flag            4,102  (0.99%)
+   zero_coords_flag                  27  (0.01%)
+   positive_longitude_flag           31  (0.01%)
+   out_of_state_coords_flag          64  (0.02%)
+   state_centroid_flag              148  (0.04%)
+   invalid_coords_flag            4,341  (1.05%)
+   coords_backfilled_flag        45,255  (lat/lon geocoded by IDX – informational)
+   Records with usable coordinates for maps: 409,512
+   Months with >5% missing coordinates (source-data gap):
+     CRMLSSold202402.csv               27.0%
+   -> For maps, aggregate by PostalCode (present on 99.99% of rows) instead of plotting points.
+
+8. Duplicate ListingKeys (rows kept, flagged):
+   ListingKeys appearing more than once      337
+   duplicate_listingkey_flag (older copies)     341
+   Unique listings after removing flagged copies: 413,512
+
+ROW COUNTS
+   Start (Residential, with mortgage rates)        414,054
+   Removed: missing CloseDate or ClosePrice              2
+   Removed: invalid numeric values (any rule)          199
+   Final cleaned rows                              413,853
+   Columns: 74
+
+DATA TYPE CONFIRMATION (key fields)
+CloseDate                   datetime64[ns]
+PurchaseContractDate        datetime64[ns]
+ListingContractDate         datetime64[ns]
+ContractStatusChangeDate    datetime64[ns]
+ClosePrice                         float64
+ListPrice                          float64
+OriginalListPrice                  float64
+LivingArea                         float64
+BedroomsTotal                        Int64
+BathroomsTotalInteger                Int64
+DaysOnMarket                         Int64
+YearBuilt                            Int64
+Latitude                           float64
+Longitude                          float64
+rate_30yr_fixed                    float64
+ViewYN                             boolean
+PoolPrivateYN                      boolean
+AttachedGarageYN                   boolean
+FireplaceYN                        boolean
+NewConstructionYN                  boolean
+
+Saved: output/sold_cleaned.csv
+
+LISTINGS
+1. CloseDate                  -> datetime  (unparseable values set to NaT: 0)
+1. PurchaseContractDate       -> datetime  (unparseable values set to NaT: 0)
+1. ListingContractDate        -> datetime  (unparseable values set to NaT: 0)
+1. ContractStatusChangeDate   -> datetime  (unparseable values set to NaT: 0)
+
+2. Dropped 6 redundant columns: ['MlsStatus', 'ListAgentFirstName', 'ListAgentLastName', 'ListingKeyNumeric', 'LotSizeArea', 'ListAgentEmail']
+
+3. Stripped whitespace in 31 text columns; 0 empty strings -> NaN
+   Converted Y/N fields to boolean: ['AttachedGarageYN', 'FireplaceYN', 'NewConstructionYN']
+
+5. Invalid numeric values (removed):
+   ClosePrice <= 0                    0
+   ListPrice <= 0                     0
+   LivingArea <= 0                  366
+   DaysOnMarket < 0                  29
+   BedroomsTotal < 0                  0
+   BathroomsTotalInteger < 0          0
+
+6. Date consistency flags (rows kept):
+   listing_after_close_flag          74  (0.01%)
+   purchase_after_close_flag        229  (0.04%)
+   negative_timeline_flag           274  (0.05%)
+
+7. Geographic data quality (rows kept, flagged):
+   missing_coords_flag           80,646  (14.49%)
+   zero_coords_flag                  65  (0.01%)
+   positive_longitude_flag           73  (0.01%)
+   out_of_state_coords_flag         230  (0.04%)
+   state_centroid_flag                1  (0.00%)
+   invalid_coords_flag           80,942  (14.54%)
+   Records with usable coordinates for maps: 475,714
+   Months with >5% missing coordinates (source-data gap):
+     CRMLSListing202401.csv            26.3%
+     CRMLSListing202402.csv            26.6%
+     CRMLSListing202403.csv            36.0%
+     CRMLSListing202404.csv            30.7%
+     CRMLSListing202405.csv            50.4%
+     CRMLSListing202406.csv            79.9%
+     CRMLSListing202407.csv            80.6%
+     CRMLSListing202408.csv            20.6%
+   -> For maps, aggregate by PostalCode (present on 99.99% of rows) instead of plotting points.
+
+8. Duplicate ListingKeys (rows kept, flagged):
+   ListingKeys appearing more than once      158
+   duplicate_listingkey_flag (older copies)     160
+   Unique listings after removing flagged copies: 556,496
+
+ROW COUNTS
+   Start (Residential, with mortgage rates)        557,051
+   Removed: invalid numeric values (any rule)          395
+   Final cleaned rows                              556,656
+   Columns: 65
+
+DATA TYPE CONFIRMATION (key fields)
+CloseDate                   datetime64[ns]
+PurchaseContractDate        datetime64[ns]
+ListingContractDate         datetime64[ns]
+ContractStatusChangeDate    datetime64[ns]
+ClosePrice                         float64
+ListPrice                          float64
+OriginalListPrice                  float64
+LivingArea                         float64
+BedroomsTotal                        Int64
+BathroomsTotalInteger                Int64
+DaysOnMarket                         Int64
+YearBuilt                            Int64
+Latitude                           float64
+Longitude                          float64
+rate_30yr_fixed                    float64
+AttachedGarageYN                   boolean
+FireplaceYN                        boolean
+NewConstructionYN                  boolean
+
+Saved: output/listings_cleaned.csv
