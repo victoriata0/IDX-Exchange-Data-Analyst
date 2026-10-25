@@ -22,7 +22,7 @@ The raw data is confidential MLS data and is not included in this repo.
 | Week 1 combined | 85 | 74 |
 | Weeks 2–3 after dropping empty columns | 70 | 59 |
 | Weeks 2–3 after adding mortgage rate | 72 | 61 |
-| Weeks 4–5 cleaned (redundant columns out, flag columns in) | 73 | 64 |
+| Weeks 4–5 cleaned (redundant columns out, flag columns in) | 74 | 65 |
 
 ## Week 0 – Data Pipeline Orientation
 
@@ -128,6 +128,7 @@ What it does
    DaysOnMarket < 0, negative bedrooms/bathrooms
 6. Flags (keeps) date-order problems
 7. Flags (keeps) bad coordinates
+8. Flags (keeps) older copies of listings that appear in more than one monthly file
 
 Row counts
 
@@ -154,6 +155,17 @@ Geographic data quality (rows kept)
 | Outside California | 64 | 230 |
 | Exactly at California's center point (failed geocode) | 148 | 1 |
 | Any invalid (invalid_coords_flag) | 4,341 (1.0%) | 80,942 (14.5%) |
+
+Duplicate ListingKeys (rows kept)
+
+| | Sold | Listings |
+|---|---:|---:|
+| ListingKeys appearing more than once | 337 | 158 |
+| Older copies flagged (duplicate_listingkey_flag) | 341 | 160 |
+| Unique listings after excluding flagged copies | 413,512 | 556,496 |
+
+The same listing shows up in two monthly files when the MLS record was updated
+after the first export. The newest copy is kept unflagged.
 
 Findings
 - 148 sold homes sit at exactly 36.778, −119.418 – the center of California,
