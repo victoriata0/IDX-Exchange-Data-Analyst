@@ -16,6 +16,7 @@ The raw data is confidential MLS data and is not included in this repo.
 | After dropping >90%-empty columns | 414,054 | 557,051 | Weeks 2–3 EDA |
 | After merging mortgage rates | 414,054 | 557,051 | Weeks 2–3 rates |
 | After cleaning (final analysis-ready data) | 413,853 | 556,656 | Weeks 4–5 |
+| After adding market metrics and school districts | 413,853 | – | Week 6 |
 
 | Stage | Sold columns | Listing columns |
 |---|---:|---:|
@@ -23,6 +24,7 @@ The raw data is confidential MLS data and is not included in this repo.
 | Weeks 2–3 after dropping empty columns | 70 | 59 |
 | Weeks 2–3 after adding mortgage rate | 72 | 61 |
 | Weeks 4–5 cleaned (redundant columns out, flag columns in) | 74 | 65 |
+| Week 6 with market metrics and school districts | 86 | – |
 
 ## Week 0 – Data Pipeline Orientation
 
@@ -177,6 +179,46 @@ Findings
 
 Output: output/sold_cleaned.csv, output/listings_cleaned.csv
 
+## Week 6 – Feature Engineering and Market Metrics
+
+Script: scripts/week6_features.py · Full output: results/feature_report.txt
+
+What it does
+1. Adds market metrics to the cleaned sold data
+
+| New column | Formula | Purpose |
+|---|---|---|
+| price_ratio | ClosePrice / ListPrice | Negotiation strength vs. final asking price |
+| close_to_original_list_ratio | ClosePrice / OriginalListPrice | Captures every price cut since first listing |
+| price_per_sqft | ClosePrice / LivingArea | Normalizes price across home sizes |
+| DaysOnMarket | Raw MLS field (kept as is) | Time to sell |
+| close_year, close_month, close_yrmo | From CloseDate | Time-series analysis (close_yrmo like 2024-01) |
+| listing_to_contract_days | PurchaseContractDate − ListingContractDate | Time from listing to accepted offer |
+| contract_to_close_days | CloseDate − PurchaseContractDate | Escrow / closing period |
+
+   Ratios only use valid denominators (> 0); otherwise they are left blank.
+
+2. Assigns each home to its school district by latitude/longitude using the
+   California School District Areas 2024-25 boundaries (California Department
+   of Education). California has unified (K-12) districts plus separate,
+   overlapping elementary and high school districts, so each home gets either
+   a unified district or an elementary + high school district:
+   school_district_unified, school_district_elementary, school_district_high,
+   and school_district (unified if there is one, otherwise elementary).
+   Homes with invalid coordinates from Weeks 4–5 get no district. Match counts
+   are in results/feature_report.txt.
+
+3. Segment summary tables – medians, one row per listing (older duplicate
+   copies left out), by:
+   - PropertyType / PropertySubType
+   - County, and county + MLS area
+   - School district
+   - Listing office and buyer office (units and sales volume)
+
+Row counts: unchanged at 413,853 sold rows; 12 new columns (74 → 86).
+
+Output: output/sold_features.csv, output/week6/segment_*.csv
+
 ## How to run
 
 Put the raw CRMLS*.csv files in the project folder, with the scripts in a
@@ -187,31 +229,7 @@ python3 scripts/week1_combine.py
 python3 scripts/week2_3_eda.py
 python3 scripts/week2_3_mortgage_rates.py
 python3 scripts/week4_5_cleaning.py
+python3 scripts/week6_features.py
 ```
 
 Requires Python 3 with pandas, matplotlib, and requests.
-
-
-## Week 6 – Feature Engineering and Market Metrics
-
-Script: scripts/week6_features.py · Full output: results/feature_report.txt
-
-What it does
-1. Adds market metrics to the cleaned sold data:
-   - price_ratio = ClosePrice / ListPrice (negotiation strength)
-   - close_to_original_list_ratio = ClosePrice / OriginalListPrice (captures price cuts)
-   - price_per_sqft = ClosePrice / LivingArea
-   - DaysOnMarket (raw field, kept as is)
-   - close_year, close_month, close_yrmo (from CloseDate)
-   - listing_to_contract_days = PurchaseContractDate - ListingContractDate
-   - contract_to_close_days = CloseDate - PurchaseContractDate
-2. Assigns each home to its school district by latitude/longitude using the
-   California School District Areas 2024-25 boundaries (CDE). Homes get either
-   a unified district or an elementary + high school district.
-3. Segment summary tables (medians, one row per listing) by PropertySubType,
-   county, county + MLS area, school district, and listing/buyer office.
-
-Row counts: unchanged at 413,853 sold rows; 13 new columns.
-Homes matched to a school district: ___ of ___ with usable coordinates (___%).
-
-Output: output/sold_features.csv, output/week6/segment_*.csv
