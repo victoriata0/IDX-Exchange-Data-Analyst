@@ -1,6 +1,5 @@
 """
-Week 6 – Feature Engineering and Market Metrics
------------------------------------------------
+Week 6 – Feature Engineering and Market 
 Adds the market metrics that power the Tableau dashboards, assigns each
 home to its school district(s) from latitude/longitude, and produces
 segment summary tables.
@@ -92,17 +91,13 @@ def safe_divide(a, b):
     return a / b.where(b > 0)
 
 
-# =============================================================================
 # Load
-# =============================================================================
 DATES = ["CloseDate", "PurchaseContractDate", "ListingContractDate"]
 sold = pd.read_csv(OUT / "sold_cleaned.csv", low_memory=False, parse_dates=DATES)
 start_cols = sold.shape[1]
 print(f"Loaded sold_cleaned.csv: {len(sold):,} rows x {start_cols} columns")
 
-# =============================================================================
 # 1. Market metrics
-# =============================================================================
 print("\n1. MARKET METRICS")
 sold["price_ratio"] = safe_divide(sold["ClosePrice"], sold["ListPrice"])
 sold["close_to_original_list_ratio"] = safe_divide(sold["ClosePrice"], sold["OriginalListPrice"])
@@ -129,11 +124,9 @@ neg_ctc = (sold["contract_to_close_days"] < 0).sum()
 print(f"   listing_to_contract_days < 0: {neg_ltc:,} "
       f"(= negative_timeline_flag rows from Weeks 4–5)")
 print(f"   contract_to_close_days < 0:   {neg_ctc:,} "
-      f"(= purchase_after_close_flag rows from Weeks 4–5)")
-
-# =============================================================================
+      f"(= purchase_after_close_flag rows from Weeks 4–
+      
 # 2. School districts (point-in-polygon on latitude/longitude)
-# =============================================================================
 print("\n2. SCHOOL DISTRICTS")
 if not DISTRICTS_FILE.exists():
     print("   Downloading California School District Areas 2024-25 ...")
@@ -218,9 +211,7 @@ print(f"     in an elementary district:   {sold['school_district_elementary'].no
 print(f"     in a high school district:   {sold['school_district_high'].notna().sum():,}")
 print(f"   No district (bad/missing coordinates or outside all boundaries): {(~matched).sum():,}")
 
-# =============================================================================
 # 3. Sample output – new columns populated
-# =============================================================================
 print("\n3. SAMPLE OUTPUT (new columns)")
 SAMPLE_COLS = ["CloseDate", "ClosePrice", "ListPrice", "OriginalListPrice", "LivingArea",
                "price_ratio", "close_to_original_list_ratio", "price_per_sqft", "DaysOnMarket",
@@ -233,9 +224,7 @@ for c in ["price_ratio", "close_to_original_list_ratio"]:
     sample[c] = sample[c].round(3)
 print(sample.to_string(index=False))
 
-# =============================================================================
 # 4. Segment analysis
-# =============================================================================
 base = sold
 if "duplicate_listingkey_flag" in sold:
     base = sold[~sold["duplicate_listingkey_flag"].astype(bool)]
@@ -291,9 +280,7 @@ for col, name in (("ListOfficeName", "list_office"), ("BuyerOfficeName", "buyer_
     show["median_close_price"] = show["median_close_price"].round(0)
     print(show.to_string())
 
-# =============================================================================
 # 5. Save
-# =============================================================================
 sold.to_csv(OUT / "sold_features.csv", index=False)
 print(f"\n5. SAVED output/sold_features.csv: {len(sold):,} rows x {sold.shape[1]} columns "
       f"({sold.shape[1] - start_cols} new)")
