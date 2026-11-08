@@ -190,3 +190,28 @@ python3 scripts/week4_5_cleaning.py
 ```
 
 Requires Python 3 with pandas, matplotlib, and requests.
+
+
+## Week 6 – Feature Engineering and Market Metrics
+
+Script: scripts/week6_features.py · Full output: results/feature_report.txt
+
+What it does
+1. Adds market metrics to the cleaned sold data:
+   - price_ratio = ClosePrice / ListPrice (negotiation strength)
+   - close_to_original_list_ratio = ClosePrice / OriginalListPrice (captures price cuts)
+   - price_per_sqft = ClosePrice / LivingArea
+   - DaysOnMarket (raw field, kept as is)
+   - close_year, close_month, close_yrmo (from CloseDate)
+   - listing_to_contract_days = PurchaseContractDate - ListingContractDate
+   - contract_to_close_days = CloseDate - PurchaseContractDate
+2. Assigns each home to its school district by latitude/longitude using the
+   California School District Areas 2024-25 boundaries (CDE). Homes get either
+   a unified district or an elementary + high school district.
+3. Segment summary tables (medians, one row per listing) by PropertySubType,
+   county, county + MLS area, school district, and listing/buyer office.
+
+Row counts: unchanged at 413,853 sold rows; 13 new columns.
+Homes matched to a school district: ___ of ___ with usable coordinates (___%).
+
+Output: output/sold_features.csv, output/week6/segment_*.csv
