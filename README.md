@@ -17,6 +17,8 @@ The raw data is confidential MLS data and is not included in this repo.
 | After merging mortgage rates | 414,054 | 557,051 | Weeks 2–3 rates |
 | After cleaning (final analysis-ready data) | 413,853 | 556,656 | Weeks 4–5 |
 | After adding market metrics and school districts | 413,853 | – | Week 6 |
+| Full flagged dataset (outlier flags added) | 413,853 | – | Week 7 |
+| Filtered analysis dataset (outliers and duplicate copies left out) | 348,591 | – | Week 7 |
 
 | Stage | Sold columns | Listing columns |
 |---|---:|---:|
@@ -205,8 +207,11 @@ What it does
    a unified district or an elementary + high school district:
    school_district_unified, school_district_elementary, school_district_high,
    and school_district (unified if there is one, otherwise elementary).
-   Homes with invalid coordinates from Weeks 4–5 get no district. Match counts
-   are in results/feature_report.txt.
+   Homes with invalid coordinates from Weeks 4–5 get no district.
+   Result: 409,393 of the 409,512 homes with usable coordinates (99.97%)
+   matched a district – 309,548 in a unified district, 101,523 in an
+   elementary district and 99,471 in a high school district. 4,460 homes have
+   no district (bad or missing coordinates).
 
 3. Segment summary tables – medians, one row per listing (older duplicate
    copies left out), by:
@@ -215,9 +220,77 @@ What it does
    - School district
    - Listing office and buyer office (units and sales volume)
 
+   Highlights: single-family homes are 309,302 of the sales (median $895,000);
+   the highest-priced school districts are Hillsborough City Elementary
+   ($5.35M median), Rancho Santa Fe Elementary ($5.0M) and Saratoga Union
+   Elementary ($4.25M). Summary tables: results/segment_property_type.csv,
+   results/segment_county.csv, results/segment_school_district.csv.
+
 Row counts: unchanged at 413,853 sold rows; 12 new columns (74 → 86).
 
 Output: output/sold_features.csv, output/week6/segment_*.csv
+
+## Week 7 – Outlier Detection and Data Quality
+
+Script: scripts/week7_outliers.py · Full output: results/outlier_report.txt
+
+What it does – a tiered approach: flag first, keep the raw records, and build a
+separate filtered dataset.
+
+1. Tier 1 – business rules. ClosePrice ≤ 0, LivingArea ≤ 0 and DaysOnMarket < 0
+   are always invalid (all 0 here – removed in Weeks 4–5). New: a price ratio
+   below 0.5 or above 2 means the list price was entered wrong (e.g. an original
+   list price of $1). 1,343 sales get ratio_entry_error_flag (302 on
+   price_ratio, 1,335 on close_to_original_list_ratio); the sale is kept
+   and the bad ratio is blanked in the filtered dataset.
+2. Tier 2 – IQR flags. For each field: IQR = Q3 − Q1, lower = Q1 − 1.5 × IQR,
+   upper = Q3 + 1.5 × IQR. Rows outside the bounds get <field>_outlier_flag.
+   1st/99th percentiles are shown next to each bound (results/iqr_bounds.csv).
+
+| Field | Upper bound | Flagged | Use |
+|---|---:|---:|---|
+| ClosePrice | $2,387,500 | 30,715 (7.4%) | flag + filter |
+| LivingArea | 3,676 sq ft | 18,207 (4.4%) | flag + filter |
+| DaysOnMarket | 108 days | 31,772 (7.7%) | flag + filter |
+| price_per_sqft | $1,278 | 17,454 (4.2%) | flag only |
+| close_to_original_list_ratio | 0.86 – 1.12 | 38,243 (9.2%) | flag only |
+
+   Lower bounds for price, size and days on market are negative, so IQR only
+   flags the high end. The ratio is flag-only because at 1.5 × IQR it catches
+   normal homes that had a 15%+ price cut, which is real market behavior.
+
+3. Tier 3 – filtered dataset: leaves out rows flagged on ClosePrice,
+   LivingArea or DaysOnMarket (64,971) and older duplicate copies of a listing
+   (291).
+
+Row counts
+
+| | Rows |
+|---|---:|
+| Full flagged dataset | 413,853 |
+| Outlier on ClosePrice, LivingArea or DaysOnMarket | −64,971 |
+| Older duplicate copy of a listing | −291 |
+| Filtered dataset | 348,591 (84.2%) |
+
+Before vs. after filtering (results/before_after_comparison.csv)
+
+| | Median before | Median after | Mean before | Mean after |
+|---|---:|---:|---:|---:|
+| ClosePrice | $823,000 | $785,000 (−4.6%) | $1,193,067 | $899,011 (−24.6%) |
+| LivingArea | 1,643 | 1,569 | 1,905 | 1,675 |
+| DaysOnMarket | 18 | 16 | 37.4 | 26.3 |
+| price_per_sqft | $537 | $527 | $650 | $568 |
+
+Findings
+- The mean close price drops 25% but the median only 5%: a few very expensive
+  sales (up to $989.5M, a data-entry error) pull the mean up, so dashboards
+  should report medians.
+- The IQR bounds are statewide. Most ClosePrice outliers are ordinary homes in
+  high-cost counties (Los Angeles 9,351, Orange 5,567, Santa Clara 4,422), so
+  county-level analysis of expensive areas should use the full flagged dataset
+  or per-county bounds.
+
+Output: output/sold_flagged.csv (all rows + 8 flag columns), output/sold_filtered.csv
 
 ## How to run
 
@@ -230,6 +303,7 @@ python3 scripts/week2_3_eda.py
 python3 scripts/week2_3_mortgage_rates.py
 python3 scripts/week4_5_cleaning.py
 python3 scripts/week6_features.py
+python3 scripts/week7_outliers.py
 ```
 
 Requires Python 3 with pandas, matplotlib, and requests.
